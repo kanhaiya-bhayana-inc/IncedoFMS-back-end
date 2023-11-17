@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "ASKm7vdulbaEC5cIaskfSFZeFM067RsId0j6Og5d87A=",
+  "Source": "FMS.Services.AzueFileUploadAPI",
+  "BasePath": "_content/FMS.Services.AzueFileUploadAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

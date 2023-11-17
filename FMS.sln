@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{21C210DE-A77D-4902-8A94-C858904FE472}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FMS.Services.AzueFileUploadAPI", "FMS.Microservices.AzueFileUploadAPI\FMS.Services.AzueFileUploadAPI.csproj", "{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8} = {21C210DE-A77D-4902-8A94-C858904FE472}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AC4C8AD3-AC33-4D3C-A59C-D4A80F883098}
+	EndGlobalSection
+EndGlobal

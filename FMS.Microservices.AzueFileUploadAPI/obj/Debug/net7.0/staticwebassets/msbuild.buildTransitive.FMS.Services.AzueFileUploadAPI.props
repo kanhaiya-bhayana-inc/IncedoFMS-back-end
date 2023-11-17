@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\FMS.Services.AzueFileUploadAPI.props" />
+</Project>
