@@ -13,7 +13,7 @@ namespace FMS.Services.AzueFileUploadAPI.Helpers
                 if (accountNameIndex != -1)
                 {
                     // Find the starting position of the value
-                    int valueStartIndex = accountNameIndex + "AccountName=".Length;
+                    int valueStartIndex = accountNameIndex +$"{key}=".Length;
 
                     // Find the position of the next semicolon after the value
                     int valueEndIndex = data.IndexOf(';', valueStartIndex);
