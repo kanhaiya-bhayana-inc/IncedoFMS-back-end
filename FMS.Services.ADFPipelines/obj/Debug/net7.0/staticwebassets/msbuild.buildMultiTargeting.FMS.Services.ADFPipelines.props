@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\FMS.Services.ADFPipelines.props" />
+</Project>

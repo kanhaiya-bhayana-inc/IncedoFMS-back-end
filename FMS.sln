@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{21
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FMS.Services.AzueFileUploadAPI", "FMS.Microservices.AzueFileUploadAPI\FMS.Services.AzueFileUploadAPI.csproj", "{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FMS.Services.ADFPipelines", "FMS.Services.ADFPipelines\FMS.Services.ADFPipelines.csproj", "{C6526E86-ACC0-4C9F-8C26-5D4BFCF9ABC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +19,17 @@ Global
 		{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6526E86-ACC0-4C9F-8C26-5D4BFCF9ABC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6526E86-ACC0-4C9F-8C26-5D4BFCF9ABC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6526E86-ACC0-4C9F-8C26-5D4BFCF9ABC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6526E86-ACC0-4C9F-8C26-5D4BFCF9ABC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A75DD1FB-CD5A-4D6A-9F56-EBAC179C53B8} = {21C210DE-A77D-4902-8A94-C858904FE472}
+		{C6526E86-ACC0-4C9F-8C26-5D4BFCF9ABC2} = {21C210DE-A77D-4902-8A94-C858904FE472}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC4C8AD3-AC33-4D3C-A59C-D4A80F883098}

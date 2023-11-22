@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "NVFWqhWgaSG44+rJOLbS8H6hMFHxzgrDlTxKDSIozFU=",
+  "Source": "FMS.Services.ADFPipelines",
+  "BasePath": "_content/FMS.Services.ADFPipelines",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
