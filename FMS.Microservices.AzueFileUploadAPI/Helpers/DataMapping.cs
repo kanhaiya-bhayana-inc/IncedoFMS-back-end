@@ -30,7 +30,7 @@ namespace FMS.Services.AzueFileUploadAPI.Helpers
                 response.ClientID = request.VendorName;
                 response.FileTypeID = request.FileTypeID;
                 response.InsertionMode = request.InsertionMode;
-                response.TemplateName = request.TemplateFile.FileName;
+                response.TemplateName = request.FileMasterId+"_"+request.FileName;
                 response.FixedLength = request.FixedLength == "true" ? "Y" : "N";
                 response.DbNotebook = request.DbNotebook;
             }

@@ -45,6 +45,11 @@ namespace FMS.Services.AzueFileUploadAPI.Repository
                 using (SqlCommand command = new SqlCommand("UpsertIntoFileDetailsMaster2", connection))
                 {
                     Guid id = new Guid();
+                    string tempName = requestData.FileMasterId;
+                    if (tempName == null)
+                    {
+                        tempName = id.ToString();
+                    }
                     command.CommandType = System.Data.CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@FileMasterId", (requestData.FileMasterId)==null?id:requestData.FileMasterId);
                     command.Parameters.AddWithValue("@FileName", requestData.FileName);
@@ -53,7 +58,7 @@ namespace FMS.Services.AzueFileUploadAPI.Repository
                     command.Parameters.AddWithValue("@FileTypeID", requestData.FileTypeID);
                     command.Parameters.AddWithValue("@Delimiter", requestData.Delimiter);
                     command.Parameters.AddWithValue("@FixedLength", requestData.FixedLength);
-                    command.Parameters.AddWithValue("@TemplateName", requestData.TemplateName);
+                    command.Parameters.AddWithValue("@TemplateName", tempName+"_"+requestData.FileName);
                     command.Parameters.AddWithValue("@EmailID", requestData.EmailID);
                     command.Parameters.AddWithValue("@ClientID", requestData.ClientID);
                     command.Parameters.AddWithValue("@FileDate", requestData.FileDate);
