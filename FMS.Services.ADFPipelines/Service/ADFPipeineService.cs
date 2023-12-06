@@ -43,8 +43,8 @@ namespace FMS.Services.ADFPipelines.Service
             List<string> pipelineStatuses = new List<string>();
             List<PipelineDTO> pipelineData = new List<PipelineDTO>();
 
-            foreach (var pipeline in pipelines)
-            {
+           /* foreach (var pipeline in pipelines)
+            {*/
                 // Get the latest run status of the pipeline
                 var pipelineRuns = await dataFactoryManagementClient.PipelineRuns.QueryByFactoryAsync(
                     _resourceGroupName,
@@ -56,7 +56,23 @@ namespace FMS.Services.ADFPipelines.Service
                     }
                 );
 
-                var latestRun = pipelineRuns.Value
+                foreach (var item in pipelineRuns.Value)
+                {
+                    PipelineDTO pipelineDTO = new PipelineDTO
+                    {
+                        PipelineName = item.PipelineName,
+                        RunStart = (DateTime)item.RunStart,
+                        RunEnd = (DateTime)item.RunEnd,
+                        DurationInMS = (int)item.DurationInMs,
+                        RunID = item.RunId,
+                        ErrorMessage = item.Message,
+                        Status = item.Status,
+                        Parameters = (Dictionary<string, string>)item.Parameters
+                    };
+                    pipelineData.Add(pipelineDTO);
+                }
+
+                /*var latestRun = pipelineRuns.Value
                     .Where(run => run.PipelineName.Equals(pipeline.Name, StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(run => run.RunEnd)
                     .FirstOrDefault();
@@ -94,15 +110,15 @@ namespace FMS.Services.ADFPipelines.Service
                 {
                     //pipelineStatuses.Add($"Pipeline: {pipeline.Name}, Status: No runs found + RunID: { pipeline.Etag}");
                     //Console.WriteLine($"Pipeline: {pipeline.Name}, Status: No runs found + RunID: {pipeline.Etag}");
-                }
-            }
+                }*/
+            /*}
 
             // Print or use the pipeline statuses as needed
             foreach (var status in pipelineStatuses)
             {
                 Console.WriteLine(status);
             }
-            var result = pipelineStatuses;
+            var result = pipelineStatuses;*/
 
             return pipelineData;
         }

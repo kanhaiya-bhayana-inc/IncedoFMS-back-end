@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <parameters>
-  <parameter name="IIS Web Application Name" description="" value="DemoFMS" tags="IisApp">
+  <parameter name="IIS Web Application Name" description="" value="CloudfmsBE" tags="IisApp">
     <parameterEntry kind="ProviderPath" scope="IisApp" match="^D:\\FMS\\fms-be-master\\FMS\.Microservices\.AzueFileUploadAPI\\obj\\Release\\net7\.0\\PubTmp\\Out\\$" />
   </parameter>
 </parameters>
