@@ -4,6 +4,7 @@ using Microsoft.Azure.Management.DataFactory.Models;
 using Microsoft.Azure.Management.DataFactory;
 using Microsoft.Rest.Azure.Authentication;
 using FMS.Services.ADFPipelines.Helpers;
+using System.Collections.Concurrent;
 
 namespace FMS.Services.ADFPipelines.Service
 {
@@ -25,6 +26,45 @@ namespace FMS.Services.ADFPipelines.Service
             _dataFactoryName = configuration.GetValue<string>("ADFPipeline:dataFactoryName");
         }
 
+        public async Task<ResponseDTO> RerunPipelineAsync(string pipelineName)
+        {
+            try
+            {
+                ResponseDTO res = new ResponseDTO();
+                var token = await GetAccessTokenAsync(_clientId, _clientSecret, _tenantId);
+
+
+                using (var client = new HttpClient())
+                {
+
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                    string baseUrl = $"https://management.azure.com/subscriptions/{_subscriptionId}/resourceGroups/{_resourceGroupName}/providers/Microsoft.DataFactory/factories/{_dataFactoryName}/pipelines/{pipelineName}/createRun?api-version=2018-06-01";
+                    // Perform the rerun operation
+                    var response = await client.PostAsync(baseUrl, new StringContent(""));
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("Pipeline run rerun initiated successfully!");
+                        /*res.StatusCode = response.StatusCode.ToString();
+                        res.StatusMessage = response.IsSuccessStatusCode.ToString();*/
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
+                        //res.StatusCode = response.StatusCode.ToString();
+                        
+                    }
+                    res.StatusCode = response.StatusCode.ToString();
+                    res.StatusMessage = response.IsSuccessStatusCode.ToString();
+                }
+                return res;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+            return new ResponseDTO(); 
+        }
 
         async Task<List<PipelineDTO>> IADFPipeineService.GetPipelinesDataAsync()
         {
@@ -36,6 +76,7 @@ namespace FMS.Services.ADFPipelines.Service
             {
                 SubscriptionId = _subscriptionId
             };
+            int i = 1;
 
             // Get a list of pipelines in the specified Data Factory
             var pipelines = await dataFactoryManagementClient.Pipelines.ListByFactoryAsync(_resourceGroupName, _dataFactoryName);
@@ -43,20 +84,31 @@ namespace FMS.Services.ADFPipelines.Service
             List<string> pipelineStatuses = new List<string>();
             List<PipelineDTO> pipelineData = new List<PipelineDTO>();
 
-           /* foreach (var pipeline in pipelines)
-            {*/
-                // Get the latest run status of the pipeline
-                var pipelineRuns = await dataFactoryManagementClient.PipelineRuns.QueryByFactoryAsync(
+           
+
+            string continuationToken = null;
+            PipelineRunsQueryResponse pipelineRuns;
+
+            // Get the latest run status of the pipeline
+            do
+            {
+                // Get the latest run status of the pipeline with pagination
+                pipelineRuns = await dataFactoryManagementClient.PipelineRuns.QueryByFactoryAsync(
                     _resourceGroupName,
                     _dataFactoryName,
                     new RunFilterParameters
                     {
                         LastUpdatedAfter = DateTime.UtcNow.AddMonths(-1), // Adjust the time range as needed
-                        LastUpdatedBefore = DateTime.UtcNow
+                        LastUpdatedBefore = DateTime.UtcNow,
+                        ContinuationToken= continuationToken, // Pass the continuation token
+                        
                     }
+                    
                 );
 
-                foreach (var item in pipelineRuns.Value)
+                var result = new ConcurrentBag<PipelineDTO>();
+
+                Parallel.ForEach(pipelineRuns.Value, item =>
                 {
                     PipelineDTO pipelineDTO = new PipelineDTO
                     {
@@ -69,58 +121,60 @@ namespace FMS.Services.ADFPipelines.Service
                         Status = item.Status,
                         Parameters = (Dictionary<string, string>)item.Parameters
                     };
-                    pipelineData.Add(pipelineDTO);
-                }
+                    result.Add(pipelineDTO);
+                });
+                pipelineData.AddRange(result);
+                //foreach (var item in pipelineRuns.Value)
+                //{
+                //    // Process the pipeline run data
+                //    PipelineDTO pipelineDTO = new PipelineDTO
+                //    {
+                //        PipelineName = item.PipelineName,
+                //        RunStart = (DateTime)item.RunStart,
+                //        RunEnd = (DateTime)item.RunEnd,
+                //        DurationInMS = (int)item.DurationInMs,
+                //        RunID = item.RunId,
+                //        ErrorMessage = item.Message,
+                //        Status = item.Status,
+                //        Parameters = (Dictionary<string, string>)item.Parameters
+                //    };
+                //    pipelineData.Add(pipelineDTO);
+                //    //Console.WriteLine($"Pipeline Run ID: {pipelineRun.RunId}" + " i -> "+i++);
+                //}
 
-                /*var latestRun = pipelineRuns.Value
-                    .Where(run => run.PipelineName.Equals(pipeline.Name, StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(run => run.RunEnd)
-                    .FirstOrDefault();
+                // Update the continuation token for the next iteration
+                continuationToken = pipelineRuns.ContinuationToken;
 
-                if (latestRun != null)
+            } while (!string.IsNullOrEmpty(continuationToken));
+
+            pipelineData = pipelineData.OrderByDescending(p => p.RunStart).ToList();
+            return pipelineData;
+        }
+
+        private async Task<string> GetAccessTokenAsync(string clientId, string clientSecret, string tenantId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var requestBody = new Dictionary<string, string>
                 {
-                    pipelineStatuses.Add($"Pipeline: {latestRun.PipelineName} | Run start: {latestRun.RunStart} | Run end: {latestRun.RunEnd} | Duration: {latestRun.DurationInMs} | Status: {latestRun.Status} | RunID: {latestRun.RunId}");
-                    if (latestRun.Parameters != null)
-                    {
-                        foreach (var parameter in latestRun.Parameters)
-                        {
-                            pipelineStatuses.Add($"{parameter.Key}: {parameter.Value}");
-                        }
-                    }
-                    if (latestRun.Status == "Failed")
-                    {
-                        pipelineStatuses.Add($"Error message: {latestRun.Message}");
-                    }
-                    PipelineDTO pipelineDTO = new PipelineDTO
-                    {
-                        PipelineName = latestRun.PipelineName,
-                        RunStart = (DateTime)latestRun.RunStart,
-                        RunEnd = (DateTime)latestRun.RunEnd,
-                        DurationInMS = (int)latestRun.DurationInMs,
-                        RunID = latestRun.RunId,
-                        ErrorMessage = latestRun.Message,
-                        Status = latestRun.Status,
-                        Parameters = (Dictionary<string, string>)latestRun.Parameters
-                    };
-                    pipelineData.Add( pipelineDTO );
+                    { "grant_type", "client_credentials" },
+                    { "client_id", clientId },
+                    { "client_secret", clientSecret },
+                    { "resource", "https://management.azure.com/" },
+                };
 
-                    //Console.WriteLine($"Pipeline: {pipeline.Name}, Status: {latestRun.Status} + RunID: {pipeline.Etag}");
+                HttpResponseMessage response = await client.PostAsync($"https://login.microsoftonline.com/{tenantId}/oauth2/token", new FormUrlEncodedContent(requestBody));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                    return tokenResponse.access_token;
                 }
                 else
                 {
-                    //pipelineStatuses.Add($"Pipeline: {pipeline.Name}, Status: No runs found + RunID: { pipeline.Etag}");
-                    //Console.WriteLine($"Pipeline: {pipeline.Name}, Status: No runs found + RunID: {pipeline.Etag}");
-                }*/
-            /*}
-
-            // Print or use the pipeline statuses as needed
-            foreach (var status in pipelineStatuses)
-            {
-                Console.WriteLine(status);
+                    throw new Exception($"Error getting access token: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
+                }
             }
-            var result = pipelineStatuses;*/
-
-            return pipelineData;
         }
     }
 }

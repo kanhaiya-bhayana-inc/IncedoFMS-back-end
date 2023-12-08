@@ -13,10 +13,17 @@ namespace FMS.Services.ADFPipelines.Controllers
         {
             _service = aDFPipeineService;
         }
-        [HttpGet]
+        [HttpGet("GetPipelineData")]
         public async Task<IActionResult> GetPipelineData()
         {
             var response = await _service.GetPipelinesDataAsync();
+            return Ok(response);
+        }
+
+        [HttpPost("RerunADFPipeline")]
+        public async Task<IActionResult> RerunADFPipeline(string request)
+        {
+            var response = await _service.RerunPipelineAsync(request);
             return Ok(response);
         }
     }
