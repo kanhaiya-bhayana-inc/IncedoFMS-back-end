@@ -29,10 +29,15 @@ namespace FMS.Services.AzueFileUploadAPI.Helpers
                 response.IsActive = request.IsActive == "true" ? "Y" : "N";
                 response.ClientID = request.VendorName;
                 response.FileTypeID = request.FileTypeID;
+                response.StartPosition = request.StartPosition;
+                response.EndPosition = request.EndPosition;
                 response.InsertionMode = request.InsertionMode;
-                response.TemplateName = request.FileMasterId+"_"+request.FileName;
+                response.TemplateName = request.TemplateFile.FileName;
                 response.FixedLength = request.FixedLength == "true" ? "Y" : "N";
                 response.DbNotebook = request.DbNotebook;
+                response.Stage = request.Stage == "true" ? "Y" : "N";
+                response.Curated = request.Curated == "true" ? "Y" : "N";
+                response.Header = request.Header == "true" ? "Y" : "N";
             }
 
             return response;
@@ -56,6 +61,11 @@ namespace FMS.Services.AzueFileUploadAPI.Helpers
                 response.InsertionMode = request.GetString(11);
                 response.IsActive = request.GetString(12) == "Y" ? "true" : "false";
                 response.DbNotebook = request.GetString(13);
+                response.StartPosition = request.GetInt32(14).ToString();
+                response.EndPosition = request.GetInt32(15).ToString();
+                response.Stage = request.GetString(16) == "Y" ? "true" : "false";
+                response.Curated = request.GetString(17) == "Y" ? "true" : "false";
+                response.Header = request.GetString(18) == "Y" ? "true" : "false";
             }
 
             return response;

@@ -42,9 +42,14 @@ namespace FMS.Services.AzueFileUploadAPI.Services.Service
                             string emailid = ds.Tables[0].Rows[i]["emailid"].ToString();
                             string clientid = ds.Tables[0].Rows[i]["clientid"].ToString();
                             string filedate = ds.Tables[0].Rows[i]["filedate"].ToString();
+                            string startPosition = ds.Tables[0].Rows[i]["startposition"].ToString();
+                            string endPosition = ds.Tables[0].Rows[i]["endposition"].ToString();
                             string insertionmode = ds.Tables[0].Rows[i]["insertionmode"].ToString();
                             string isactive = ds.Tables[0].Rows[i]["isactive"].ToString();
                             string dbnotebook = ds.Tables[0].Rows[i]["dbnotebook"].ToString();
+                            string stage = ds.Tables[0].Rows[i]["stage"].ToString();
+                            string curated = ds.Tables[0].Rows[i]["curated"].ToString();
+                            string header = ds.Tables[0].Rows[i]["header"].ToString();
 
                             FileManagement fileData = new FileManagement
                             {
@@ -59,9 +64,14 @@ namespace FMS.Services.AzueFileUploadAPI.Services.Service
                                 EmailID = emailid,
                                 ClientID = clientid,
                                 FileDate = filedate.Trim(),
+                                StartPosition = startPosition,
+                                EndPosition = endPosition,
                                 InsertionMode = insertionmode.Trim(),
                                 IsActive = (isactive == "Y") ? "true" : "false",
-                                DbNotebook = dbnotebook
+                                DbNotebook = dbnotebook,
+                                Stage = (stage == "Y") ? "true" : "false",
+                                Curated = (curated == "Y") ? "true" : "false",
+                                Header = (header == "Y") ? "true" : "false"
                             };
 
                             data.Add(fileData);

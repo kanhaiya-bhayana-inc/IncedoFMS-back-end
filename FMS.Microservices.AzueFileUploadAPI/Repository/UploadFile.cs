@@ -42,7 +42,7 @@ namespace FMS.Services.AzueFileUploadAPI.Repository
             {
                 connection.Open();
 
-                using (SqlCommand command = new SqlCommand("UpsertIntoFileDetailsMaster2", connection))
+                using (SqlCommand command = new SqlCommand("UpsertIntoFileDetailsMaster8", connection))
                 {
                     Guid id = new Guid();
                     string tempName = requestData.FileMasterId;
@@ -58,13 +58,18 @@ namespace FMS.Services.AzueFileUploadAPI.Repository
                     command.Parameters.AddWithValue("@FileTypeID", requestData.FileTypeID);
                     command.Parameters.AddWithValue("@Delimiter", requestData.Delimiter);
                     command.Parameters.AddWithValue("@FixedLength", requestData.FixedLength);
-                    command.Parameters.AddWithValue("@TemplateName", tempName+"_"+requestData.FileName);
+                    command.Parameters.AddWithValue("@TemplateName", requestData.TemplateName);
                     command.Parameters.AddWithValue("@EmailID", requestData.EmailID);
                     command.Parameters.AddWithValue("@ClientID", requestData.ClientID);
                     command.Parameters.AddWithValue("@FileDate", requestData.FileDate);
+                    command.Parameters.AddWithValue("@StartPosition", requestData.StartPosition);
+                    command.Parameters.AddWithValue("@EndPosition", requestData.EndPosition);
                     command.Parameters.AddWithValue("@InsertionMode", requestData.InsertionMode);
                     command.Parameters.AddWithValue("@IsActive", requestData.IsActive);
                     command.Parameters.AddWithValue("@DbNotebook", requestData.DbNotebook);
+                    command.Parameters.AddWithValue("@Stage", requestData.Stage);
+                    command.Parameters.AddWithValue("@Curated", requestData.Curated);
+                    command.Parameters.AddWithValue("@Header", requestData.Header);
 
                     SqlTransaction transaction = connection.BeginTransaction();
                     try
