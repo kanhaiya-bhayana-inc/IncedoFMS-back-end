@@ -1,7 +1,9 @@
-﻿using FMS.Services.AzueFileUploadAPI.Model.DropdownOptions;
+﻿using Azure;
+using FMS.Services.AzueFileUploadAPI.Model.DropdownOptions;
 using FMS.Services.AzueFileUploadAPI.Services.IService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace FMS.Services.AzueFileUploadAPI.Controllers
 {
@@ -31,6 +33,7 @@ namespace FMS.Services.AzueFileUploadAPI.Controllers
             }
             catch (Exception ex)
             {
+                Log.Error("DataController-GetDelimiters exception -> {@response}", ex.Message);
                 throw ex;
             }
         }
@@ -45,6 +48,7 @@ namespace FMS.Services.AzueFileUploadAPI.Controllers
             }
             catch (Exception ex)
             {
+                Log.Error("DataController-GetVendorDetails exception -> {@response}", ex.Message);
                 throw ex;
             }
         }
@@ -59,6 +63,7 @@ namespace FMS.Services.AzueFileUploadAPI.Controllers
             }
             catch (Exception ex)
             {
+                Log.Error("DataController-GetFiledateDetails exception -> {@response}", ex.Message);
                 throw ex;
             }
         }
@@ -73,6 +78,7 @@ namespace FMS.Services.AzueFileUploadAPI.Controllers
             }
             catch (Exception ex)
             {
+                Log.Error("DataController-GetFiletypeDetails exception -> {@response}", ex.Message);
                 throw ex;
             }
         }
@@ -87,6 +93,7 @@ namespace FMS.Services.AzueFileUploadAPI.Controllers
             }
             catch (Exception ex)
             {
+                Log.Error("DataController-GetAllFilesDetails exception -> {@response}", ex.Message);
                 throw ex;
             }
         }
@@ -102,6 +109,7 @@ namespace FMS.Services.AzueFileUploadAPI.Controllers
             }
             catch (Exception ex)
             {
+                Log.Error("DataController-GetBlobConfigInfo exception -> {@response}", ex.Message);
                 throw ex;
             }
         }

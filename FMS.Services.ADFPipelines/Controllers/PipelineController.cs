@@ -1,6 +1,7 @@
 ﻿using FMS.Services.ADFPipelines.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace FMS.Services.ADFPipelines.Controllers
 {
@@ -16,15 +17,33 @@ namespace FMS.Services.ADFPipelines.Controllers
         [HttpGet("GetPipelineData")]
         public async Task<IActionResult> GetPipelineData()
         {
-            var response = await _service.GetPipelinesDataAsync();
-            return Ok(response);
+            try
+            {
+                var response = await _service.GetPipelinesDataAsync();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("PipelineController-GetPipelineData exception -> {@response}", ex.Message);
+                throw ex;
+            }
+            
         }
 
         [HttpPost("RerunADFPipeline")]
         public async Task<IActionResult> RerunADFPipeline(string request)
         {
-            var response = await _service.RerunPipelineAsync(request);
-            return Ok(response);
+            try
+            {
+                var response = await _service.RerunPipelineAsync(request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("PipelineController-RerunADFPipeline exception -> {@response}", ex.Message);
+                throw ex;
+            }
+            
         }
     }
 }

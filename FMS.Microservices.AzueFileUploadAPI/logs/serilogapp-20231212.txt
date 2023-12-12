@@ -1,0 +1,13 @@
+2023-12-12 20:24:55.801 +05:30 [INF] Now listening on: https://localhost:7116
+2023-12-12 20:24:55.831 +05:30 [INF] Now listening on: http://localhost:5067
+2023-12-12 20:24:55.835 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2023-12-12 20:24:55.835 +05:30 [INF] Hosting environment: Development
+2023-12-12 20:24:55.835 +05:30 [INF] Content root path: D:\FMS\fms-be-master\FMS.Microservices.AzueFileUploadAPI
+2023-12-12 20:24:56.269 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7116/swagger/index.html - -
+2023-12-12 20:24:56.773 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7116/swagger/index.html - - - 200 - text/html;charset=utf-8 506.9283ms
+2023-12-12 20:24:57.143 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7116/_framework/aspnetcore-browser-refresh.js - -
+2023-12-12 20:24:57.159 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7116/_framework/aspnetcore-browser-refresh.js - - - 200 12392 application/javascript;+charset=utf-8 15.5491ms
+2023-12-12 20:24:57.246 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7116/_vs/browserLink - -
+2023-12-12 20:24:57.272 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7116/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 25.7482ms
+2023-12-12 20:24:57.648 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7116/swagger/v1/swagger.json - -
+2023-12-12 20:24:57.833 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7116/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 184.5894ms

@@ -21,9 +21,9 @@
 
         public IFormFile TemplateFile { get; set; }
         public IFormFile? SampleFile { get; set; }
-        public string Stage { get; set; }
-        public string Curated { get; set; }
-        public string Header { get; set; }
+        public string? Stage { get; set; }
+        public string? Curated { get; set; }
+        public string? Header { get; set; }
 
 
 

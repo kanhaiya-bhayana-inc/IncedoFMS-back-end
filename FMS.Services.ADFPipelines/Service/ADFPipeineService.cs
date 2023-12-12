@@ -68,94 +68,101 @@ namespace FMS.Services.ADFPipelines.Service
 
         async Task<List<PipelineDTO>> IADFPipeineService.GetPipelinesDataAsync()
         {
-            
-
-            var serviceClientCredentials = ApplicationTokenProvider.LoginSilentAsync(_tenantId, _clientId, _clientSecret).Result;
-
-            var dataFactoryManagementClient = new DataFactoryManagementClient(serviceClientCredentials)
+            try
             {
-                SubscriptionId = _subscriptionId
-            };
-            int i = 1;
+                var serviceClientCredentials = ApplicationTokenProvider.LoginSilentAsync(_tenantId, _clientId, _clientSecret).Result;
 
-            // Get a list of pipelines in the specified Data Factory
-            var pipelines = await dataFactoryManagementClient.Pipelines.ListByFactoryAsync(_resourceGroupName, _dataFactoryName);
-
-            List<string> pipelineStatuses = new List<string>();
-            List<PipelineDTO> pipelineData = new List<PipelineDTO>();
-
-           
-
-            string continuationToken = null;
-            PipelineRunsQueryResponse pipelineRuns;
-
-            // Get the latest run status of the pipeline
-            do
-            {
-                // Get the latest run status of the pipeline with pagination
-                pipelineRuns = await dataFactoryManagementClient.PipelineRuns.QueryByFactoryAsync(
-                    _resourceGroupName,
-                    _dataFactoryName,
-                    new RunFilterParameters
-                    {
-                        LastUpdatedAfter = DateTime.UtcNow.AddMonths(-1), // Adjust the time range as needed
-                        LastUpdatedBefore = DateTime.UtcNow,
-                        ContinuationToken= continuationToken, // Pass the continuation token
-                        
-                    }
-                    
-                );
-
-                var result = new ConcurrentBag<PipelineDTO>();
-
-                Parallel.ForEach(pipelineRuns.Value, item =>
+                var dataFactoryManagementClient = new DataFactoryManagementClient(serviceClientCredentials)
                 {
-                    PipelineDTO pipelineDTO = new PipelineDTO
+                    SubscriptionId = _subscriptionId
+                };
+                int i = 1;
+
+                // Get a list of pipelines in the specified Data Factory
+                var pipelines = await dataFactoryManagementClient.Pipelines.ListByFactoryAsync(_resourceGroupName, _dataFactoryName);
+
+                List<string> pipelineStatuses = new List<string>();
+                List<PipelineDTO> pipelineData = new List<PipelineDTO>();
+
+
+
+                string continuationToken = null;
+                PipelineRunsQueryResponse pipelineRuns;
+
+                // Get the latest run status of the pipeline
+                do
+                {
+                    // Get the latest run status of the pipeline with pagination
+                    pipelineRuns = await dataFactoryManagementClient.PipelineRuns.QueryByFactoryAsync(
+                        _resourceGroupName,
+                        _dataFactoryName,
+                        new RunFilterParameters
+                        {
+                            LastUpdatedAfter = DateTime.UtcNow.AddMonths(-1), // Adjust the time range as needed
+                            LastUpdatedBefore = DateTime.UtcNow,
+                            ContinuationToken = continuationToken, // Pass the continuation token
+
+                        }
+
+                    );
+
+                    var result = new ConcurrentBag<PipelineDTO>();
+
+                    Parallel.ForEach(pipelineRuns.Value, item =>
                     {
-                        PipelineName = item.PipelineName,
-                        RunStart = (DateTime)item.RunStart,
-                        RunEnd = (DateTime)item.RunEnd,
-                        DurationInMS = (int)item.DurationInMs,
-                        RunID = item.RunId,
-                        ErrorMessage = item.Message,
-                        Status = item.Status,
-                        Parameters = (Dictionary<string, string>)item.Parameters
-                    };
-                    result.Add(pipelineDTO);
-                });
-                pipelineData.AddRange(result);
-                //foreach (var item in pipelineRuns.Value)
-                //{
-                //    // Process the pipeline run data
-                //    PipelineDTO pipelineDTO = new PipelineDTO
-                //    {
-                //        PipelineName = item.PipelineName,
-                //        RunStart = (DateTime)item.RunStart,
-                //        RunEnd = (DateTime)item.RunEnd,
-                //        DurationInMS = (int)item.DurationInMs,
-                //        RunID = item.RunId,
-                //        ErrorMessage = item.Message,
-                //        Status = item.Status,
-                //        Parameters = (Dictionary<string, string>)item.Parameters
-                //    };
-                //    pipelineData.Add(pipelineDTO);
-                //    //Console.WriteLine($"Pipeline Run ID: {pipelineRun.RunId}" + " i -> "+i++);
-                //}
+                        PipelineDTO pipelineDTO = new PipelineDTO
+                        {
+                            PipelineName = item.PipelineName,
+                            RunStart = (DateTime)item.RunStart,
+                            RunEnd = (DateTime)item.RunEnd,
+                            DurationInMS = (int)item.DurationInMs,
+                            RunID = item.RunId,
+                            ErrorMessage = item.Message,
+                            Status = item.Status,
+                            Parameters = (Dictionary<string, string>)item.Parameters
+                        };
+                        result.Add(pipelineDTO);
+                    });
+                    pipelineData.AddRange(result);
+                    //foreach (var item in pipelineRuns.Value)
+                    //{
+                    //    // Process the pipeline run data
+                    //    PipelineDTO pipelineDTO = new PipelineDTO
+                    //    {
+                    //        PipelineName = item.PipelineName,
+                    //        RunStart = (DateTime)item.RunStart,
+                    //        RunEnd = (DateTime)item.RunEnd,
+                    //        DurationInMS = (int)item.DurationInMs,
+                    //        RunID = item.RunId,
+                    //        ErrorMessage = item.Message,
+                    //        Status = item.Status,
+                    //        Parameters = (Dictionary<string, string>)item.Parameters
+                    //    };
+                    //    pipelineData.Add(pipelineDTO);
+                    //    //Console.WriteLine($"Pipeline Run ID: {pipelineRun.RunId}" + " i -> "+i++);
+                    //}
 
-                // Update the continuation token for the next iteration
-                continuationToken = pipelineRuns.ContinuationToken;
+                    // Update the continuation token for the next iteration
+                    continuationToken = pipelineRuns.ContinuationToken;
 
-            } while (!string.IsNullOrEmpty(continuationToken));
+                } while (!string.IsNullOrEmpty(continuationToken));
 
-            pipelineData = pipelineData.OrderByDescending(p => p.RunStart).ToList();
-            return pipelineData;
+                pipelineData = pipelineData.OrderByDescending(p => p.RunStart).ToList();
+                return pipelineData;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private async Task<string> GetAccessTokenAsync(string clientId, string clientSecret, string tenantId)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                var requestBody = new Dictionary<string, string>
+                using (HttpClient client = new HttpClient())
+                {
+                    var requestBody = new Dictionary<string, string>
                 {
                     { "grant_type", "client_credentials" },
                     { "client_id", clientId },
@@ -163,18 +170,24 @@ namespace FMS.Services.ADFPipelines.Service
                     { "resource", "https://management.azure.com/" },
                 };
 
-                HttpResponseMessage response = await client.PostAsync($"https://login.microsoftonline.com/{tenantId}/oauth2/token", new FormUrlEncodedContent(requestBody));
+                    HttpResponseMessage response = await client.PostAsync($"https://login.microsoftonline.com/{tenantId}/oauth2/token", new FormUrlEncodedContent(requestBody));
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-                    return tokenResponse.access_token;
-                }
-                else
-                {
-                    throw new Exception($"Error getting access token: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                        return tokenResponse.access_token;
+                    }
+                    else
+                    {
+                        throw new Exception($"Error getting access token: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
         }
     }
 }

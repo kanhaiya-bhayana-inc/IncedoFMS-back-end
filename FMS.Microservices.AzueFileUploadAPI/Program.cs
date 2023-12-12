@@ -3,6 +3,7 @@ using FMS.Services.AzueFileUploadAPI.Repository;
 using FMS.Services.AzueFileUploadAPI.Services;
 using FMS.Services.AzueFileUploadAPI.Services.IService;
 using FMS.Services.AzueFileUploadAPI.Services.Service;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+// Configure serilog... #2 Variation
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 var app = builder.Build();
 app.UseCors(policy => policy.AllowAnyHeader()
                             .AllowAnyMethod()
@@ -35,6 +44,7 @@ app.UseCors(policy => policy.AllowAnyHeader()
     app.UseSwaggerUI();
 //}
 
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

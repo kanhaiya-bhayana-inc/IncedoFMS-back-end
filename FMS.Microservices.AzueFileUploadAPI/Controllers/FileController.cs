@@ -1,9 +1,11 @@
-﻿using FMS.Services.AzueFileUploadAPI.Model.Dto;
+﻿using Azure;
+using FMS.Services.AzueFileUploadAPI.Model.Dto;
 using FMS.Services.AzueFileUploadAPI.Services;
 using FMS.Services.AzueFileUploadAPI.Services.IService;
 using FMS.Services.AzueFileUploadAPI.Services.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace FMS.Services.AzueFileUploadAPI.Controllers
 {
@@ -23,9 +25,19 @@ namespace FMS.Services.AzueFileUploadAPI.Controllers
         [HttpPost("UploadFile")]
         public async Task<AzureBlobResponseDto> UploadFile([FromForm] FileManagementDTO fileManagementDTO)
         {
-            var response = _uploadFile.UploadFileAsync(fileManagementDTO);
-            return response;
+            try
+            {
+                var response = _uploadFile.UploadFileAsync(fileManagementDTO);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("FileController-UploadFile exception -> {@response}", ex.Message);
+                throw ex;
+            }
+            
         }
+
         [HttpGet("DownloadFile")]
         public async Task<IActionResult> DownloadBlob([FromQuery] bool check)
         {
@@ -34,21 +46,23 @@ namespace FMS.Services.AzueFileUploadAPI.Controllers
             try
             {
                 IFormFile response = await _blobDownloader.DownloadTemplateAsync(check);
-
                 if (response != null)
                 {
                     // Return the IFormFile as a FileResult
+                    
                     return File(response.OpenReadStream(), "text/csv", response.FileName);
                 }
                 else
                 {
                     return NotFound(); // Handle not found case
                 }
+                
             }
             catch (Exception ex)
             {
                 // Log the exception for debugging
                 Console.WriteLine($"An error occurred: {ex.Message}");
+                Log.Error("FileController-DownloadFile Exception -> {@ex.Message}", ex.Message);
                 return StatusCode(500); // Handle internal server error
             }
         }

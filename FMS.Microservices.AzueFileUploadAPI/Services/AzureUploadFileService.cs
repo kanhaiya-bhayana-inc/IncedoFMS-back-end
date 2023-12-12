@@ -20,38 +20,45 @@ namespace FMS.Services.AzueFileUploadAPI.Services
         }
         public async Task<AzureBlobResponseDto> UploadAsync(IFormFile blob, string filetype, string path)
         {
-            AzureBlobResponseDto response = new();
-            BlobContainerClient container = new BlobContainerClient(_storageConnectionString, _storageContainerName);
-           
-            
-            string location = fpm.FixPathMapper(path, filetype);
             try
             {
-                BlobClient client = container.GetBlobClient($"{location}/{blob.FileName}");
+                AzureBlobResponseDto response = new();
+                BlobContainerClient container = new BlobContainerClient(_storageConnectionString, _storageContainerName);
 
-                await using (Stream? data = blob.OpenReadStream())
+
+                string location = fpm.FixPathMapper(path, filetype);
+                try
                 {
-                    await client.UploadAsync(data, overwrite: true);
+                    BlobClient client = container.GetBlobClient($"{location}/{blob.FileName}");
+
+                    await using (Stream? data = blob.OpenReadStream())
+                    {
+                        await client.UploadAsync(data, overwrite: true);
+                    }
+
+                    response.Status = $"File Uploaded Successfully";
+                    response.Error = false;
+                }
+                catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobAlreadyExists)
+                {
+                    response.Status = $"Failed to upload, File with name {blob.FileName} already exists. Please use another name to store your file.";
+                    response.Error = true;
+
+                    return response;
+                }
+                catch (RequestFailedException ex)
+                {
+                    response.Status = $"Unexpected error: {ex.StackTrace}. Check log with StackTrace ID.";
+                    response.Error = true;
+                    return response;
                 }
 
-                response.Status = $"File Uploaded Successfully";
-                response.Error = false;
-            }
-            catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobAlreadyExists)
-            {
-                response.Status = $"Failed to upload, File with name {blob.FileName} already exists. Please use another name to store your file.";
-                response.Error = true;
-
                 return response;
             }
-            catch (RequestFailedException ex)
+            catch(Exception ex)
             {
-                response.Status = $"Unexpected error: {ex.StackTrace}. Check log with StackTrace ID.";
-                response.Error = true;
-                return response;
+                throw ex;
             }
-
-            return response;
         }
     }
 }

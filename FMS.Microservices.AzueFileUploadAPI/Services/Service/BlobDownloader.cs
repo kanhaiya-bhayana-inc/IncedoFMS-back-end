@@ -24,24 +24,31 @@ namespace FMS.Services.AzueFileUploadAPI.Services.Service
 
         public async Task<IFormFile> DownloadBlobAndConvertToFormFileAsync(string containerName, string blobName)
         {
-            IFormFile formFile1 = null;
-            BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-            BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-            if (await blobClient.ExistsAsync())
+            try
             {
-                BlobDownloadInfo blobDownloadInfo = await blobClient.DownloadAsync();
+                IFormFile formFile1 = null;
+                BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+                BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
-                MemoryStream memoryStream = new MemoryStream();
-                await blobDownloadInfo.Content.CopyToAsync(memoryStream);
-                memoryStream.Position = 0;
+                if (await blobClient.ExistsAsync())
+                {
+                    BlobDownloadInfo blobDownloadInfo = await blobClient.DownloadAsync();
 
-                IFormFile formFile = new FormFile(memoryStream, 0, memoryStream.Length, blobName, blobName);
+                    MemoryStream memoryStream = new MemoryStream();
+                    await blobDownloadInfo.Content.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
 
-                return formFile;
+                    IFormFile formFile = new FormFile(memoryStream, 0, memoryStream.Length, blobName, blobName);
+
+                    return formFile;
+                }
+
+                return formFile1; // Blob not found
             }
-
-            return formFile1; // Blob not found
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<IFormFile> DownloadTemplateAsync(bool fixedLengthCheck)
