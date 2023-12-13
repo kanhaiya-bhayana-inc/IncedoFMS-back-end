@@ -43,7 +43,6 @@ namespace FMS.Services.ADFPipelines.Controllers
                 Log.Error("PipelineController-RerunADFPipeline exception -> {@response}", ex.Message);
                 throw ex;
             }
-            
         }
     }
 }

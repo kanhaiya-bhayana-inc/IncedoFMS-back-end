@@ -2,7 +2,9 @@
 {
     public class ResponseDTO
     {
-        public string? StatusCode { get; set; }
-        public string? StatusMessage { get; set; }
+        public int StatusCode { get; set; }
+        public string? IsSuccessStatusCode { get; set; }
+
+        public string? ReasonPhrase { get; set; }
     }
 }

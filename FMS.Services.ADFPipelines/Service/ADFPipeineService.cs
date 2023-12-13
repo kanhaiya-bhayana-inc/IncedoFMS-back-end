@@ -54,8 +54,9 @@ namespace FMS.Services.ADFPipelines.Service
                         //res.StatusCode = response.StatusCode.ToString();
                         
                     }
-                    res.StatusCode = response.StatusCode.ToString();
-                    res.StatusMessage = response.IsSuccessStatusCode.ToString();
+                    res.StatusCode = (int)response.StatusCode;
+                    res.IsSuccessStatusCode = response.IsSuccessStatusCode.ToString();
+                    res.ReasonPhrase = response.ReasonPhrase;
                 }
                 return res;
             }
